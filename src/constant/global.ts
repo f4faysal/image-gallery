@@ -1,4 +1,4 @@
-export const defaultImage = [
+export const defaultImages = [
   {
     id: "1",
     image: "/images/image-1.webp",
