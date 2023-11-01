@@ -7,9 +7,17 @@ import { Id, Images } from "../types";
 interface ImageProps {
   image: Images;
   deleteImage: (id: Id) => void;
+  selectedItems: number[];
+  deleteSelectedItems: () => void;
+  toggleItemSelection: (id: number) => void;
 }
 
-const ImageContainer = ({ image, deleteImage }: ImageProps) => {
+const ImageContainer = ({
+  image,
+  deleteImage,
+  selectedItems,
+  toggleItemSelection,
+}: ImageProps) => {
   const {
     setNodeRef,
     attributes,
@@ -52,14 +60,26 @@ const ImageContainer = ({ image, deleteImage }: ImageProps) => {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative z-10 col-span-1 row-span-1 bg-white hover:bg-white/75 rounded-md w-60 h-60 p-3"
+      className="relative bg-white  col-span-1 row-span-1 rounded-md w-60 h-60 p-3 border shadow-lg group"
     >
-      <div {...attributes} {...listeners} className=" h-full w-full">
-        <div className="absolute ">
-          <Checkbox onClick={() => deleteImage(image.id)} />
+      <div
+        {...attributes}
+        {...listeners}
+        className={`h-full w-full rounded-md`}
+      >
+        <div className={`absolute z-10 hidden group-hover:block`}>
+          <Checkbox
+            color="red"
+            checked={selectedItems.includes(image.id)}
+            onChange={() => toggleItemSelection(image.id)}
+          />
         </div>
         <div>
-          <img className="z-10 " src={image.image} alt={image.alt} />
+          <img
+            className="group-hover:opacity-25 transform transition-all duration-500 rounded hover:scale-105"
+            src={image.image}
+            alt={image.alt}
+          />
         </div>
       </div>
     </div>
