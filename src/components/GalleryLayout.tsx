@@ -4,7 +4,9 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
+  MouseSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -14,8 +16,10 @@ import { useMemo, useState } from "react";
 import { Button } from "@material-tailwind/react";
 import { createPortal } from "react-dom";
 import { defaultImages } from "../constant/global";
+import ImageIcon from "../icons/ImageIcon";
+import PlusIcon from "../icons/PlusIcon";
 import TrashIcon from "../icons/TrashIcon";
-import { Id, Images } from "../types";
+import { Images } from "../types";
 import ImageContainer from "./ImageContainer";
 
 const GalleryLayout = () => {
@@ -55,20 +59,23 @@ const GalleryLayout = () => {
     }
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 3,
-      },
-    })
-  );
-
-  function deleteImage(id: Id) {
-    // const newImages = images.filter((image) => image.id !== id);
-    // setImages(newImages);
-
-    console.log(id);
-  }
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+      distance: 5,
+    },
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    activationConstraint: {
+      distance: 5,
+    },
+  });
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 5,
+    },
+  });
+  // const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(pointerSensor, touchSensor, mouseSensor);
 
   const toggleItemSelection = (itemId: number) => {
     if (selectedItems.includes(itemId)) {
@@ -77,25 +84,15 @@ const GalleryLayout = () => {
       setSelectedItems([...selectedItems, itemId]);
     }
   };
-
   const deleteSelectedItems = () => {
     setImages(images.filter((item) => !selectedItems.includes(item.id)));
     setSelectedItems([]);
   };
-  console.log(selectedItems);
 
   return (
-    <div
-      className="
-    m-auto
-    flex
-    min-h-screen
-    w-full
-    items-center
-    px-[40px]"
-    >
-      <div className="m-auto border rounded-lg shadow">
-        <div className="p-5  border-b shadow-sm flex items-center justify-between">
+    <div className="m-auto flex min-h-screen max-w-7xl items-center">
+      <div className="m-auto border rounded-lg shadow w-full  md:w-[80%] h-full p-2 md:p-0 ">
+        <div className="p-5 border-b shadow-sm flex items-center justify-between">
           <h1 className="text-2xl font-bold">
             {selectedItems.length === 0 && "Gallery"}&nbsp;
             <span className=" text-red-500">
@@ -109,38 +106,33 @@ const GalleryLayout = () => {
             </Button>
           )}
         </div>
-
-        <div
-          className="
-      
-      grid 
-      grid-cols-2 
-      md:grid-cols-3  
-      lg:grid-cols-5 gap-8 p-10"
-        >
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-5 p:2 md:p-4">
           <DndContext
             sensors={sensors}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
-            // onDragOver={onDragOver}
           >
             <SortableContext items={imageId}>
-              {/* <div className="border col-span-2  row-span-2">
-              <h1 className="text-2xl ">image 1</h1>
-            </div> */}
+              {images.map((img, index) => {
+                const isFirstImage = index === 0;
 
-              {images.map((img) => {
                 return (
                   <ImageContainer
                     toggleItemSelection={toggleItemSelection}
                     deleteSelectedItems={deleteSelectedItems}
                     selectedItems={selectedItems}
                     key={img.id}
-                    deleteImage={deleteImage}
                     image={img}
+                    isFirstImage={isFirstImage}
                   />
                 );
               })}
+              <div className=" lg:w-[180px] lg:h-[180px] border-2 border-dashed border-gray-400  rounded flex flex-col items-center justify-center gap-2">
+                <ImageIcon className="w-10 h-10 text-gray-600" />
+                <p className="flex gap-1 text-gray-500">
+                  Add Image <PlusIcon />
+                </p>
+              </div>
             </SortableContext>
 
             {/* Active */}
@@ -152,8 +144,8 @@ const GalleryLayout = () => {
                     toggleItemSelection={toggleItemSelection}
                     deleteSelectedItems={deleteSelectedItems}
                     selectedItems={selectedItems}
-                    deleteImage={deleteImage}
                     image={activeImage}
+                    isFirstImage={true}
                   />
                 )}
               </DragOverlay>,
