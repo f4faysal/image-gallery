@@ -6,6 +6,9 @@ This is a responsive image gallery built with React JS that allows you to reorde
 
 You can interact with the image gallery live at [https://imagallery.vercel.app/](https://imagallery.vercel.app/).
 
+## Screenshots
+<img src="https://res.cloudinary.com/dhvuyehnq/image/upload/v1698920652/ez8ew4ltfywvlosklzwb.png" alt="image-gallery">
+
 ## Features
 
 ### 1. Gallery Layout
@@ -84,9 +87,5 @@ The project structure is organized as follows:
 - **Deleting Multiple Images**: Click on the checkboxes to select multiple images, then click the delete button to remove them from the gallery.
 
 - **Setting Feature Image**: The first image (from left to right) is the featured image. Reorder the images to change the featured image.
-
-## Screenshots
-
-<ima src="/ss.png" alt="image gallery screenshot" width="600" />
 
 ---
