@@ -39,6 +39,8 @@ You can interact with the image gallery live at [https://imagallery.vercel.app/]
 - Tailwind CSS for styling
 - DnD Kint Core for drag and drop functionality
 - React Transition Group for animations
+- React Toastify for notifications
+- Material Tailwind for UI components
 - Vercel for hosting
 
 ## Getting Started
