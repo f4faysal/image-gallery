@@ -9,6 +9,11 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "author": {
+    "name": "Md Faysal Hossain",
+    "email": "f4faysals@gmail.com",
+    "url": "https://f4faysal.vercel.app"
+  },
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
