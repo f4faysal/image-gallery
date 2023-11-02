@@ -11,10 +11,11 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import { useMemo, useState } from "react";
-
 import { Button } from "@material-tailwind/react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import toast from "react-hot-toast";
+
 import { defaultImages } from "../constant/global";
 import ImageIcon from "../icons/ImageIcon";
 import PlusIcon from "../icons/PlusIcon";
@@ -27,11 +28,11 @@ const GalleryLayout = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [activeImage, setActiveImage] = useState<Images | null>(null);
 
+  // useMemo is a hook that allows you to memoize expensive computations so that you can avoid wasteful re-renders.ImageId is a number array that contains the id of the images.
   const imageId = useMemo(() => images.map((image) => image.id), [images]);
 
+  // onDragEnd is called when the user stops dragging an element in the list or when they drop the element in a new position.
   function onDragEnd(event: DragEndEvent) {
-    // setActiveImage(null);
-
     const { active, over } = event;
     if (!over) return;
 
@@ -40,18 +41,15 @@ const GalleryLayout = () => {
 
     if (activeId === overId) return;
 
-    // const isActiveAImage = active.data.current?.type === "Image";
-    // if (!isActiveAImage) return;
-
     setImages((images) => {
       const activeImgumnIndex = images.findIndex((img) => img.id === activeId);
-
       const overImgumnIndex = images.findIndex((img) => img.id === overId);
-
+      // Array move when the user drags an element from one position to another.
       return arrayMove(images, activeImgumnIndex, overImgumnIndex);
     });
   }
 
+  // onDragStart is called when the user starts dragging an element in the list.
   function onDragStart(event: DragStartEvent) {
     if (event.active.data.current?.type === "Images") {
       setActiveImage(event.active.data.current?.image);
@@ -59,6 +57,7 @@ const GalleryLayout = () => {
     }
   }
 
+  // useSensor is a hook that allows you to create a single sensor at a time.
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
       distance: 5,
@@ -74,9 +73,10 @@ const GalleryLayout = () => {
       distance: 5,
     },
   });
-  // const sensors = useSensors(useSensor(PointerSensor));
+  // useSensors is a hook that allows you to create multiple sensors at once.
   const sensors = useSensors(pointerSensor, touchSensor, mouseSensor);
 
+  // toggleItemSelection is a function that allows you to select or deselect an item.
   const toggleItemSelection = (itemId: number) => {
     if (selectedItems.includes(itemId)) {
       setSelectedItems(selectedItems.filter((id) => id !== itemId));
@@ -84,7 +84,10 @@ const GalleryLayout = () => {
       setSelectedItems([...selectedItems, itemId]);
     }
   };
+
+  // deleteSelectedItems is a function that allows you to delete selected items.
   const deleteSelectedItems = () => {
+    toast("Image Deleted Successfully", { icon: <TrashIcon /> });
     setImages(images.filter((item) => !selectedItems.includes(item.id)));
     setSelectedItems([]);
   };
@@ -117,25 +120,42 @@ const GalleryLayout = () => {
                 const isFirstImage = index === 0;
 
                 return (
-                  <ImageContainer
-                    toggleItemSelection={toggleItemSelection}
-                    deleteSelectedItems={deleteSelectedItems}
-                    selectedItems={selectedItems}
+                  <div
                     key={img.id}
-                    image={img}
-                    isFirstImage={isFirstImage}
-                  />
+                    className={`group relative rounded-md border  ${
+                      isFirstImage
+                        ? " col-span-2 row-span-2 z-40"
+                        : " col-span-1 row-span-1 "
+                    } `}
+                  >
+                    <ImageContainer
+                      toggleItemSelection={toggleItemSelection}
+                      deleteSelectedItems={deleteSelectedItems}
+                      selectedItems={selectedItems}
+                      image={img}
+                    />
+                  </div>
                 );
               })}
-              <div className=" lg:w-[180px] lg:h-[180px] border-2 border-dashed border-gray-400  rounded flex flex-col items-center justify-center gap-2">
-                <ImageIcon className="w-10 h-10 text-gray-600" />
-                <p className="flex gap-1 text-gray-500">
-                  Add Image <PlusIcon />
-                </p>
+
+              <div
+                onClick={() => {
+                  toast.success("Image Added Successfully");
+                }}
+              >
+                <Button
+                  className=" lg:w-[180px] lg:h-[180px] border-2 border-dashed border-gray-400  rounded flex flex-col items-center justify-center gap-2"
+                  variant="text"
+                >
+                  <ImageIcon className="w-10 h-10 text-gray-600" />
+                  <p className="flex gap-1 text-gray-500">
+                    Add Image <PlusIcon />
+                  </p>
+                </Button>
               </div>
             </SortableContext>
 
-            {/* Active */}
+            {/* Active Image */}
 
             {createPortal(
               <DragOverlay>
@@ -145,7 +165,6 @@ const GalleryLayout = () => {
                     deleteSelectedItems={deleteSelectedItems}
                     selectedItems={selectedItems}
                     image={activeImage}
-                    isFirstImage={true}
                   />
                 )}
               </DragOverlay>,

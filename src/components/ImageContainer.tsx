@@ -1,7 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
-// import { CSS } from "@dnd-kit/utilities";
-
 import { Checkbox } from "@material-tailwind/react";
+
 import { Images } from "../types";
 
 interface ImageProps {
@@ -9,15 +8,14 @@ interface ImageProps {
   selectedItems: number[];
   deleteSelectedItems: () => void;
   toggleItemSelection: (id: number) => void;
-  isFirstImage?: boolean;
 }
 
 const ImageContainer = ({
   image,
   selectedItems,
   toggleItemSelection,
-  isFirstImage,
 }: ImageProps) => {
+  // useSortable is a hook that allows you to create a sortable element.
   const {
     setNodeRef,
     attributes,
@@ -33,14 +31,6 @@ const ImageContainer = ({
     },
   });
 
-  // const style = transform
-  //   ? {
-  //       transition,
-  //       transform: CSS.Transform.toString(transform),
-  //       opacity: isDragging ? 0.5 : 1,
-  //     }
-  //   : undefined;
-
   const style = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
@@ -48,32 +38,30 @@ const ImageContainer = ({
       }
     : undefined;
 
-  const containerClasses = isFirstImage
-    ? `
-    relative col-span-2 row-span-2 rounded-md  border shadow-lg group
-
-  `
-    : "relative col-span-1 row-span-1 rounded-md border shadow-lg group";
-
+  // isDragging is a boolean that indicates whether the item is currently being dragged.
   if (isDragging) {
     return (
       <div
         ref={setNodeRef}
         style={style}
-        className={` bg-columnBackgroundColor opacity-40 border-2 border-pink-500 rounded-md ${containerClasses} `}
+        className={`w-[180px] h-[180px] opacity-40 border-2 rounded-md bg-gray-400`}
       ></div>
     );
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={containerClasses}>
+    <div
+      {...attributes}
+      ref={setNodeRef}
+      style={style}
+      className="bg-white shadow-lg z-30"
+    >
       <div
-        {...attributes}
         {...listeners}
         className={`h-full w-full rounded-md overflow-hidden bg-white`}
       >
         <div
-          className={`absolute z-10 ${
+          className={`absolute z-50 ${
             selectedItems.includes(image.id) ? "block" : "hidden"
           } group-hover:block`}
         >
